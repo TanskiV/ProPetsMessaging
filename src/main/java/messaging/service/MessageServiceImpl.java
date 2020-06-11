@@ -28,7 +28,7 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public MessageDto updatePost(String idPost, CreateUpdatePostDto updatePostDto) {
-//        Message message = messageFromUpdateDto()
+       Message message;// = messageFromUpdateDto()
         return null;
     }
 
