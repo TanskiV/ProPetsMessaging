@@ -5,6 +5,7 @@ import messaging.dto.MessageDto;
 import messaging.dto.PostsPageableDto;
 import messaging.service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -19,7 +20,7 @@ public class MessageController {
     }
 
     @PutMapping("/{lang}/v1/{id}")
-    public MessageDto updatePost(@PathVariable("id") String id, @RequestBody CreateUpdatePostDto updateDto) {
+    public MessageDto updatePost(@PathVariable("id") String id, @RequestBody CreateUpdatePostDto updateDto) throws ChangeSetPersister.NotFoundException {
         return messageService.updatePost(id, updateDto);
     }
 
@@ -40,8 +41,8 @@ public class MessageController {
     }
 
     @PutMapping("/{lang}/v1/complain/{id}")
-    public boolean complainPostByPostId (@PathVariable("id")String id){
-        return messageService.complainPostByPostId(id);
+    public void complainPostByPostId (@PathVariable("id")String id){
+         messageService.complainPostByPostId(id);
     }
 
     @PutMapping("/{lang}/v1/hide/{id}")

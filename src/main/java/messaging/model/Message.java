@@ -5,6 +5,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -19,8 +20,9 @@ public class Message {
     String id;
     String ownerId;
     LocalDateTime postDate;
+    LocalDateTime updateDate;
     String text;
-    Set<String> images;
-    boolean complain;
+    List<String> images;
+    long complain;
     Map<String, String> complains;
 }

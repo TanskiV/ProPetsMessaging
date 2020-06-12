@@ -11,7 +11,7 @@ public interface MessageService {
     MessageDto deletePost(String idPost);
     MessageDto getPostById(String idPost);
     PostsPageableDto viewPostsPageable(int itemsOnPage, int currentPage);
-    boolean complainPostByPostId(String id);
+    void complainPostByPostId(String id);
     boolean hidePostFromFeed(String id);
 
 

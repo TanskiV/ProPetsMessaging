@@ -7,11 +7,17 @@ import messaging.dto.PostsPageableDto;
 import messaging.model.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.crossstore.ChangeSetPersister;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class MessageServiceImpl implements MessageService {
@@ -28,29 +34,44 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public MessageDto updatePost(String idPost, CreateUpdatePostDto updatePostDto) {
-       Message message;// = messageFromUpdateDto()
-        return null;
+        Message message = messageFromUpdateDto(idPost, updatePostDto);
+        return messageToMessageDto(message);
     }
 
     @Override
     public MessageDto deletePost(String idPost) {
         Message message = getMessageById(idPost);
-        return null;
+        messageRepository.delete(message);
+        return messageToMessageDto(message);
     }
 
     @Override
     public MessageDto getPostById(String idPost) {
-        return null;
+        Message message = getMessageById(idPost);
+        return messageToMessageDto(message);
     }
 
     @Override
     public PostsPageableDto viewPostsPageable(int itemsOnPage, int currentPage) {
-        return null;
+        Pageable pageable = PageRequest.of(currentPage, itemsOnPage);
+        Page<Message> messages = messageRepository.findAll(pageable);
+        List<MessageDto> messagesDto = messages.getContent().stream()
+                .map(m -> messageToMessageDto(m))
+                .collect(Collectors.toList());
+        return PostsPageableDto.builder()
+                .posts(messagesDto)
+                .currentPage(currentPage)
+                .itemsOnPage(itemsOnPage)
+                .itemsTotal(messagesDto.size())
+                .build();
+
     }
 
     @Override
-    public boolean complainPostByPostId(String idPost) {
-        return false;
+    public void complainPostByPostId(String idPost) {
+        Message message = getMessageById(idPost);
+        message.setComplain(message.getComplain() + 1);
+        messageRepository.save(message);
     }
 
     @Override
@@ -65,24 +86,30 @@ public class MessageServiceImpl implements MessageService {
                 .text(createPostDto.getText())
                 .postDate(LocalDateTime.now())
                 .images(createPostDto.getImages())
-                .complain(false)
+                .complain(0)
                 .complains(new HashMap<>())
                 .id("Post:" + id)
                 .build();
     }
 
-//    private Message messageFromUpdateDto(String idPos, CreateUpdatePostDto UpdatePostDto) {
-//
-//        return Message.builder()
-//                .ownerId(ownerId)
-//                .text(UpdatePostDto.getText())
-//                .postDate(LocalDateTime.now())
-//                .images(UpdatePostDto.getImages())
-//                .complain(false)
-//                .complains(new HashMap<>())
-//                .id("Post:" + id)
-//                .build();
-//    }
+    private Message messageFromUpdateDto(String idPos, CreateUpdatePostDto updatePostDto) {
+        Message message = null;
+        try {
+            message = messageRepository.findById(idPos).orElseThrow(Exception::new);
+        } catch (Exception e) {
+
+        }
+        return Message.builder()
+                .ownerId(message.getOwnerId())
+                .text(updatePostDto.getText())
+                .postDate(message.getPostDate())
+                .updateDate(LocalDateTime.now())
+                .images(updatePostDto.getImages())
+                .complain(message.getComplain())
+                .complains(message.getComplains())
+                .id(message.getId())
+                .build();
+    }
 
     private MessageDto messageToMessageDto(Message message) {
         return MessageDto.builder()

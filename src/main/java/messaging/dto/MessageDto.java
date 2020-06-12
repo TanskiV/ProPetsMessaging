@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -13,5 +14,5 @@ public class MessageDto {
         String ownerId;
         LocalDateTime postDate;
         String text;
-        Set<String> images;
+        List<String> images;
 }
