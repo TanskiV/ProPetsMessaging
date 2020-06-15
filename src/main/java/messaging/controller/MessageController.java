@@ -6,6 +6,7 @@ import messaging.dto.PostsPageableDto;
 import messaging.service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.crossstore.ChangeSetPersister;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -13,40 +14,43 @@ import org.springframework.web.bind.annotation.*;
 public class MessageController {
     @Autowired
     MessageService messageService;
-
-    @PostMapping("/{lang}/v1/owner/{ownerId}")
-    public MessageDto createPost(@PathVariable("ownerId") String ownerId, @RequestBody CreateUpdatePostDto createMessageDto) {
-        return messageService.createPost(ownerId, createMessageDto);
+//TODO add in all methods variable ownerId
+    @PostMapping("/{lang}/v1/owner/")
+    public ResponseEntity<MessageDto> createPost(@RequestHeader("X-Token") String token, @RequestBody CreateUpdatePostDto createMessageDto) {
+        return messageService.createPost( createMessageDto, token);
     }
 
     @PutMapping("/{lang}/v1/{id}")
-    public MessageDto updatePost(@PathVariable("id") String id, @RequestBody CreateUpdatePostDto updateDto) throws ChangeSetPersister.NotFoundException {
-        return messageService.updatePost(id, updateDto);
+    public ResponseEntity<MessageDto> updatePost(@PathVariable("id") String idPost, @RequestBody CreateUpdatePostDto updateDto,
+                                 @RequestHeader("X-Token") String token) throws ChangeSetPersister.NotFoundException {
+        return messageService.updatePost(idPost, updateDto, token);
     }
 
     @DeleteMapping("/{lang}/v1/{id}")
-    public MessageDto deleteMessage(@PathVariable("id") String postId) {
-        return messageService.deletePost(postId);
+    public ResponseEntity<MessageDto> deleteMessage(@PathVariable("id") String postId, @RequestHeader("X-Token") String token) {
+        return messageService.deletePost(postId, token);
     }
 
     @GetMapping("/{lang}/v1/{id}")
-    public MessageDto getPostByPostId(@PathVariable("id") String id){
-        return  messageService.getPostById(id);
+    public ResponseEntity<MessageDto> getPostByPostId(@PathVariable("id") String idPost, @RequestHeader("X-Token") String token) {
+        return messageService.getPostById(idPost, token);
     }
 
     @GetMapping("/{lang}/v1/view")
-    public PostsPageableDto getPostPageable(@RequestParam("itemsOnPage") int itemsOnPage,
-                                            @RequestParam("currentPage") int currentPage ){
-        return messageService.viewPostsPageable(itemsOnPage, currentPage);
+    public ResponseEntity<String> getPostPageable(@RequestParam("itemsOnPage") int itemsOnPage,
+                                            @RequestParam("currentPage") int currentPage,
+                                            @RequestHeader("X-Token") String token) {
+        return messageService.viewPostsPageable(itemsOnPage, currentPage, token);
     }
 
     @PutMapping("/{lang}/v1/complain/{id}")
-    public void complainPostByPostId (@PathVariable("id")String id){
-         messageService.complainPostByPostId(id);
+    public void complainPostByPostId(@PathVariable("id") String idPost, @RequestHeader("X-Token") String token) {
+        messageService.complainPostByPostId(idPost, token);
     }
 
     @PutMapping("/{lang}/v1/hide/{id}")
-    public boolean hidePostFromFeed(@PathVariable("id")String id){
-        return messageService.hidePostFromFeed(id);
+    public boolean hidePostFromFeed(@RequestHeader("X-Token") String token,
+                                    @PathVariable("id") String id) {
+        return messageService.hidePostFromFeed(id, token);
     }
 }
