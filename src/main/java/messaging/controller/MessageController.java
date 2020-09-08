@@ -16,7 +16,8 @@ public class MessageController {
     MessageService messageService;
 //TODO add in all methods variable ownerId
     @PostMapping("/{lang}/v1/owner/")
-    public ResponseEntity<MessageDto> createPost(@RequestHeader("X-Token") String token, @RequestBody CreateUpdatePostDto createMessageDto) {
+    public ResponseEntity<MessageDto> createPost(@RequestHeader("X-Token") String token,
+                                                 @RequestBody CreateUpdatePostDto createMessageDto) {
         return messageService.createPost( createMessageDto, token);
     }
 
