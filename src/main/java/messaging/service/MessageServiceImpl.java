@@ -18,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -62,6 +63,11 @@ public class MessageServiceImpl implements MessageService {
     @Override
     public ResponseEntity<MessageDto> getPostById(String idPost, String token) {
         Message message = getMessageById(idPost);
+        if (message == null){
+          return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                  .eTag("Message not found")
+                  .build();
+        }
         return getResponseEntity(token, message);
     }
 
@@ -175,7 +181,8 @@ public class MessageServiceImpl implements MessageService {
     }
 
     private Message getMessageById(String idPost) {
-        return messageRepository.findById(idPost).orElse(new Message());
+        Message  message = messageRepository.findById(idPost).orElse(null);
+        return message;
     }
 
     private boolean userIsOwner(Message message, String token) {
