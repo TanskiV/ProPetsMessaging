@@ -2,7 +2,6 @@ package messaging.controller;
 
 import messaging.dto.CreateUpdatePostDto;
 import messaging.dto.MessageDto;
-import messaging.dto.PostsPageableDto;
 import messaging.service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.crossstore.ChangeSetPersister;
@@ -15,25 +14,25 @@ public class MessageController {
     @Autowired
     MessageService messageService;
 //TODO add in all methods variable ownerId
-    @PostMapping("/{lang}/v1/owner/")
+    @PostMapping("/{lang}/v1/")
     public ResponseEntity<MessageDto> createPost(@RequestHeader("X-Token") String token,
                                                  @RequestBody CreateUpdatePostDto createMessageDto) {
         return messageService.createPost( createMessageDto, token);
     }
 
-    @PutMapping("/{lang}/v1/{id}")
-    public ResponseEntity<MessageDto> updatePost(@PathVariable("id") String idPost, @RequestBody CreateUpdatePostDto updateDto,
+    @PutMapping("/{lang}/v1/update/")
+    public ResponseEntity<MessageDto> updatePost(@RequestParam("postId") String idPost, @RequestBody CreateUpdatePostDto updateDto,
                                  @RequestHeader("X-Token") String token) throws ChangeSetPersister.NotFoundException {
         return messageService.updatePost(idPost, updateDto, token);
     }
 
-    @DeleteMapping("/{lang}/v1/{id}")
-    public ResponseEntity<MessageDto> deleteMessage(@PathVariable("id") String postId, @RequestHeader("X-Token") String token) {
+    @DeleteMapping("/{lang}/v1/delete/")
+    public ResponseEntity<MessageDto> deleteMessage(@RequestParam("postId") String postId, @RequestHeader("X-Token") String token) {
         return messageService.deletePost(postId, token);
     }
 
-    @GetMapping("/{lang}/v1/{id}")
-    public ResponseEntity<MessageDto> getPostByPostId(@PathVariable("id") String idPost, @RequestHeader("X-Token") String token) {
+    @GetMapping("/{lang}/v1/")
+    public ResponseEntity<MessageDto> getPostByPostId(@RequestParam("postId") String idPost, @RequestHeader("X-Token") String token) {
         return messageService.getPostById(idPost, token);
     }
 
