@@ -182,6 +182,7 @@ public class MessageServiceImpl implements MessageService {
 
     private Message getMessageById(String idPost) {
         Message  message = messageRepository.findById(idPost).orElse(null);
+        System.out.println(message);
         return message;
     }
 
